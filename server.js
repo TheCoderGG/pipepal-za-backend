@@ -459,3 +459,19 @@ async function sendWA(to, text) {
 app.listen(3000, () =>
   console.log("✅  PipePal ZA backend running on :3000")
 );
+app.get("/webhook", (req, res) => {
+  const verify_token = process.env.META_VERIFY_TOKEN;
+
+  const mode = req.query["hub.mode"];
+  const token = req.query["hub.verify_token"];
+  const challenge = req.query["hub.challenge"];
+
+  if (mode && token) {
+    if (mode === "subscribe" && token === verify_token) {
+      console.log("Webhook verified!");
+      return res.status(200).send(challenge);
+    } else {
+      return res.sendStatus(403);
+    }
+  }
+});
